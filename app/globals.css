@@ -1,0 +1,89 @@
+:root {
+  --bg: #f6f8f5;
+  --text: #16201a;
+  --muted: #55625a;
+  --accent: #1f9d55;
+  --track: #dfe7e1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1511;
+    --text: #eef3ef;
+    --muted: #a3b0a7;
+    --accent: #3ccf7a;
+    --track: #24302a;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 16px;
+}
+
+.hero {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 18vh 0 48px;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+h1 {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.lead {
+  font-size: 1.2rem;
+  color: var(--muted);
+  margin-bottom: 40px;
+}
+
+.progress {
+  height: 14px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 74%;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.progress-label {
+  margin-top: 10px;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.footer {
+  text-align: center;
+  padding: 32px 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
