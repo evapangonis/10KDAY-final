@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "db:setup": "node --env-file=.env.local scripts/setup-db.mjs"
+    "db:setup": "node --env-file=.env.local scripts/setup-db.mjs",
+    "db:seed-demo": "node --env-file=.env.local scripts/seed-demo.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.6.0",
