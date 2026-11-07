@@ -15,4 +15,18 @@ await sql`
   )
 `;
 
+// One row per user per day: the schedule chat and the walks it planned.
+await sql`
+  CREATE TABLE IF NOT EXISTS walk_plans (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    plan_date DATE NOT NULL,
+    time_zone TEXT NOT NULL,
+    messages JSONB NOT NULL DEFAULT '[]',
+    walks JSONB NOT NULL DEFAULT '[]',
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE (user_id, plan_date)
+  )
+`;
+
 console.log("Database is ready.");
