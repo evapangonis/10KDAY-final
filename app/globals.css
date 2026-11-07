@@ -262,6 +262,17 @@ body {
   font-weight: 600;
 }
 
+.plan .button {
+  border: none;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.plan .note {
+  margin-bottom: 16px;
+}
+
 .reminder-banner .link-button {
   color: var(--accent-text);
 }

@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { logout } from "@/app/actions/auth";
+import { startCheckout } from "@/app/actions/billing";
 import { sql } from "@/lib/db";
 import { getCurrentUser } from "@/lib/session";
+import { getStripe, syncSubscription } from "@/lib/stripe";
 import Planner from "./Planner";
 
 export const metadata = { title: "Dashboard — 10KDAY" };
@@ -30,11 +32,30 @@ async function getTodaysPlan(userId) {
   return plan.plan_date === today ? plan : null;
 }
 
-export default async function DashboardPage() {
-  const user = await getCurrentUser();
+// After Stripe checkout, confirm the payment right away instead of waiting
+// for the webhook, so the user sees Pro as soon as they land back here.
+async function confirmCheckout(sessionId, user) {
+  try {
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.client_reference_id !== String(user.id) || !session.subscription) return;
+    await syncSubscription(await stripe.subscriptions.retrieve(session.subscription));
+  } catch (error) {
+    console.error("Couldn't confirm checkout:", error.message);
+  }
+}
+
+export default async function DashboardPage({ searchParams }) {
+  let user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const plan = await getTodaysPlan(user.id);
+  const { checkout } = await searchParams;
+  if (typeof checkout === "string" && checkout.startsWith("cs_") && !user.is_pro) {
+    await confirmCheckout(checkout, user);
+    user = await getCurrentUser();
+  }
+
+  const plan = user.is_pro ? await getTodaysPlan(user.id) : null;
 
   return (
     <main className="auth wide">
@@ -55,11 +76,29 @@ export default async function DashboardPage() {
         <strong>{user.is_pro ? "Pro" : "Free"}</strong> plan.
       </p>
 
-      <Planner
-        initialChat={plan ? toChat(plan.messages) : []}
-        initialWalks={plan?.walks ?? []}
-        initialPlanDate={plan?.plan_date ?? null}
-      />
+      {user.is_pro ? (
+        <Planner
+          initialChat={plan ? toChat(plan.messages) : []}
+          initialWalks={plan?.walks ?? []}
+          initialPlanDate={plan?.plan_date ?? null}
+        />
+      ) : (
+        <div className="plan pro">
+          <h3>Unlock your AI walking planner</h3>
+          <p className="note">
+            Tell 10KDAY your schedule and it plans walks around your day, with
+            reminders before you get busy.
+          </p>
+          <p className="price">
+            $3.99<span>/month</span>
+          </p>
+          <form action={startCheckout}>
+            <button className="button" type="submit">
+              Upgrade to Pro
+            </button>
+          </form>
+        </div>
+      )}
     </main>
   );
 }

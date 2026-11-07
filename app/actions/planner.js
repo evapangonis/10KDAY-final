@@ -19,6 +19,7 @@ function isValidTimeZone(timeZone) {
 export async function sendScheduleMessage(prevState, formData) {
   const user = await getCurrentUser();
   if (!user) return { ...prevState, error: "Please log in again." };
+  if (!user.is_pro) return { ...prevState, error: "The AI planner is part of 10KDAY Pro." };
 
   const text = String(formData.get("message") ?? "").trim();
   const timeZone = String(formData.get("timeZone") ?? "");

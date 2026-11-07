@@ -15,6 +15,10 @@ await sql`
   )
 `;
 
+// Stripe billing details, filled in when someone upgrades to Pro.
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT`;
+await sql`ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id TEXT`;
+
 // One row per user per day: the schedule chat and the walks it planned.
 await sql`
   CREATE TABLE IF NOT EXISTS walk_plans (
