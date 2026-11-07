@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { getCurrentUser } from "@/lib/session";
+
 const steps = [
   {
     title: "Tell it your day",
@@ -13,19 +16,34 @@ const steps = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <main className="page">
+      <nav className="nav">
+        <span className="brand">10KDAY</span>
+        {user ? (
+          <Link href="/dashboard">Dashboard</Link>
+        ) : (
+          <span className="nav-links">
+            <Link href="/login">Log in</Link>
+            <Link href="/signup" className="button small">
+              Sign up
+            </Link>
+          </span>
+        )}
+      </nav>
+
       <section className="hero">
-        <p className="brand">10KDAY</p>
         <h1>Hit 10,000 steps. Every single day.</h1>
         <p className="lead">
           Tell 10KDAY what your day looks like. It plans your walks around your
           schedule and reminds you to move before you get too busy to.
         </p>
-        <a className="button" href="#pricing">
+        <Link className="button" href={user ? "/dashboard" : "/signup"}>
           Get started
-        </a>
+        </Link>
 
         <div className="chat" aria-label="Example conversation">
           <p className="bubble user">
